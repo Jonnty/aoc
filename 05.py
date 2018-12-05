@@ -21,6 +21,13 @@ def do_reduction( full_polymer ):
         result = do_stage( prev )
     return prev
 
+#part 1
+
+output = do_reduction( input_polymer )
+print output
+print len(output)
+
+#part 2
 for unit in string.ascii_lowercase:
     output = do_reduction( remove_units( unit, input_polymer ))
     print unit, len(output)
