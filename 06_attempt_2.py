@@ -1,36 +1,27 @@
 import sys
 
-coordinates = [tuple(map(int, l.strip().split(', '))) for l in sys.stdin.readlines() if l.strip()]
-
-
-region = {}
-
-#set up search space with radius of 1000 from first item
-
 def dist(x1, y1, x2, y2):
     return abs(x1 - x2) + abs(y1 - y2)
 
+distance_limit = 10000
 
-x, y = coordinates[0]
+coordinates = [tuple(map(int, l.strip().split(', '))) for l in sys.stdin.readlines() if l.strip()]
 
-region_size = 10000
+minX, minY = min([p[0] for p in coordinates]), min([p[1] for p in coordinates])
+maxX, maxY = max([p[0] for p in coordinates]), max([p[1] for p in coordinates])
 
-def all_within_radius((x, y), radius):
-    for i in xrange(x - region_size, x + region_size):
-        for j in xrange(y - (region_size - i), y + (region_size - i)):
-            distance = dist(x, y, i, j)
-            if distance >= radius:
-                continue
-            yield (i, j), distance
+region = {}
 
-for coord, distance in all_within_radius(coordinates[0], region_size):
-    region[coord] = distance
+region_limit = distance_limit / len(coordinates)
 
-for x, y in coordinates[1:]:
+for i in xrange(minX - region_limit, maxX + region_limit):
+    for j in xrange(minY - region_limit, maxY + region_limit):
+        region[(i,j)] = 0
 
+for x, y in coordinates:
     for i, j in region.keys():
         region[(i, j)] += dist(x, y, i, j)
-        if region[(i, j)] >= region_size:
+        if region[(i, j)] >= distance_limit:
             del region[(i, j)]
 
 print len(region)
