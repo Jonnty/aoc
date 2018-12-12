@@ -11,7 +11,7 @@ def power_level(x, y):
 	power_level -= 5
 	return power_level
 
-square_sums = np.zeros((300,300,300))
+square_sums = np.fromfunction(power_level, (300,300))
 square_sums_set = np.zeros((300,300,300))
 
 def square_sum(x, y, size):
