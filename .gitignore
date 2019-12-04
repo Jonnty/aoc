@@ -6,4 +6,4 @@ pip-selfcheck.json
 share/
 sort
 *.DS_Store
-
+*pyc
