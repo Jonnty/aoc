@@ -1,5 +1,7 @@
 import os
 
+# $ time python3 part1.py: 2.641s
+
 def part1(lines):
     lower, upper = lines[0].split('-')
     valid_count = 0
