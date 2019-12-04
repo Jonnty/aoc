@@ -2,7 +2,7 @@ import unittest
 
 from part2 import part2
 
-class PartOneTest(unittest.TestCase):
+class PartTwoTest(unittest.TestCase):
 
     def test_provided(self):
         self.assertEqual(1, part2(1))
