@@ -1,15 +1,18 @@
-import os
+import os, functools
 from collections import defaultdict
 from itertools import chain
 
 class Planet:
     def __init__(self, name):
         self.orbited_by = []
+        self.all_orbiters_result = None
         self.name = name
 
     def is_orbited_by(self, planet):
         self.orbited_by.append(planet)
 
+    #Memoize this as we'll use it a lot
+    @functools.lru_cache(maxsize=None)
     def all_orbiters(self):
         #return a list of orbiters with the number of 'indirections'
         # one means it is a direct orbiter, 2 a direct of a direct, etc
@@ -23,9 +26,18 @@ class Planet:
     def orbiter_count(self):
         return sum([n for p, n in self.all_orbiters()])
 
-    def __repr__(self):
-        return ",".join([self.name + ")" + p.name for p in self.orbited_by])
+    def transfers_via_here(self, a, b):
+        orbiters = dict([(p.name, n) for p, n in self.all_orbiters()])
+        if not (a in orbiters and b in orbiters):
+            return None
+        return orbiters[a] + orbiters[b] - 2 # we care about orbited object, not a & b
 
+    def min_transfers_between(self, a, b):
+        transfer_counts = [p.transfers_via_here(a, b) for p, n in self.all_orbiters()]
+        return min([c for c in transfer_counts if c is not None])
+
+    def __repr__(self):
+        return self.name
 
 planets = {}
 def planet(name):
@@ -37,12 +49,13 @@ def process_input(lines):
     for line in lines:
         orbited, orbiter = line.strip().split(")")
         planet(orbited).is_orbited_by(planet(orbiter))
+    planets
 
 def part1():
     return planets["COM"].orbiter_count()
 
 def part2():
-    pass
+    return planets["COM"].min_transfers_between("SAN", "YOU")
 
 if __name__ == "__main__":
     input_loc = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'input')
