@@ -8,7 +8,10 @@ def part2(line, x_size=25, y_size=6):
     layer_size = x_size * y_size
     layers = [pixels[i:i+layer_size] for i in range(0, len(pixels), layer_size)]
 
+    sys.stdout.write("█" * (x_size + 1))
+    print()
     for y in range(y_size):
+        sys.stdout.write("█")
         for x in range(x_size):
             pos = y * x_size + x
             for layer in layers:
@@ -19,6 +22,7 @@ def part2(line, x_size=25, y_size=6):
             else:
                 sys.stdout.write(" ")
         print()
+    sys.stdout.write("█" * (x_size + 1))
 
 
 
