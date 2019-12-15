@@ -8,6 +8,9 @@ class ExitException(Exception):
 class WaitForInput(Exception):
     pass
 
+class TerminatedException(Exception):
+    pass
+
 class Intcode:
 
     def __init__(self, program):
@@ -21,7 +24,7 @@ class Intcode:
         self.operations = {
             1: (lambda a, b: a + b, self.write),
             2: (lambda a, b: a * b, self.write),
-            3: (lambda: self.get_input, self.write),
+            3: (self.get_input, self.write),
             4: (self.output, self.void),
             5: (lambda a, b: b if a != 0 else None, self.jump),
             6: (lambda a, b: b if a == 0 else None, self.jump),
@@ -33,9 +36,9 @@ class Intcode:
 
     def run(self, *inputs):
         if not self.running:
-            raise Exception("can't run, machine terminated")
+            raise TerminatedException()
         self.outputted = []
-        self.inputted = inputs
+        self.inputted = list(inputs)
 
         while True:
             opcode, modes = self.read_instruction(self.state[self.ip])
@@ -45,9 +48,7 @@ class Intcode:
             self.ip += param_count + 1 # including opcode
             try:
                 result = operation(*params)
-            except (WaitForInput, ExitException) as e:
-                if len(self.inputted) != 0:
-                    raise Exception("too many inputs provided before output/exit")
+            except WaitForInput as e:
                 self.ip -= param_count + 1 # get ready to re-run instruction
                 return self.outputted
             output_handler(result, self.param_mode(param_count + 1, modes))
@@ -79,10 +80,9 @@ class Intcode:
         self.outputted.append(a)
 
     def get_input(self):
-        print("input")
         if len(self.inputted) == 0:
             raise WaitForInput()
-        return self.inputted.pop()
+        return self.inputted.pop(0)
 
 
 
